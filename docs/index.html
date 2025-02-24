@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raphael Stöckner</title>
+    <link rel="icon" href="/images/title_img.svg" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: "Space Grotesk", sans-serif;
+        }
+
+        .container {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            background-image: url('/images/cycling.jpg');
+            background-size: cover;
+            /* background-position-y: var(--image-offset, 0%); */
+            background-position: 55% var(--image-offset, 0%);
+            background-repeat: no-repeat;
+        }
+
+        .text {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+            pointer-events: none;
+            color: #333;
+        }
+        
+        #lowerText {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: all;
+        }
+
+        .text h1 {
+            margin-bottom: 1rem;
+        }
+
+        .text p {
+            line-height: 90%;
+            margin-bottom: 0.2em;
+        }
+
+        .text m {
+            line-height: 100%;
+        }
+
+        /* Debug line */
+        .debug-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(40, 71, 31, 0);
+            z-index: 1;
+        }
+
+        /* Circle container styles */
+        .circle-container {
+            border-radius: 50%;
+            /* overflow: hidden; */
+            position: relative;
+            transition: transform 0.3s ease;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .circle-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(40, 71, 31, 1);
+            z-index: 1;
+            border-radius: 50%;
+        }
+
+        .circle-container a {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .circle-container img {
+            position: absolute;
+            width: 71%;
+            height: 71%;
+            object-fit: contain;
+            z-index: -1;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .circle-container:hover {
+            transform: scale(1.1);
+        }
+
+        .circle-container::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .circle-container:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            height: 100vh;
+            background: #333;
+            transition: right 0.3s ease-in-out;
+            z-index: 1000;
+            color: white;
+        }
+
+        /* Sidebar when active */
+        .sidebar.active {
+            right: 0;
+        }
+
+        /* Sidebar heading*/
+        .sidebar-heading {
+            font-size: 2em;
+            position: relative;
+            top: 1.0em;
+            padding-left: 20px;
+            display: block;
+        }
+
+        .menu-items {
+            margin-top: 2.2em;  /* Add space after heading */
+        }
+
+        /* Menu items */
+        .menu-item {
+            color: white;
+            padding: 15px 20px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.2s;
+        }
+
+        .menu-item:hover {
+            background-color: #555;
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+        /* Mobile screens, upright */
+        @media screen and (max-width: 600px) and (min-height: 501px) {
+            .text h1 {
+                font-size: 2em;
+            }
+
+            .text p {
+                font-size: 1.2em;
+            }
+
+            .text m {
+                font-size: 0.8rem;
+            }
+
+            .circle-container {
+                width: 90px;
+                height: 90px;
+            }
+
+            .social-links {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                width: 90%;
+                margin: 0 auto;
+            }
+
+            .sidebar {
+                right: -85vw; /* Start off-screen */
+                width: 85vw;
+            }
+        }
+
+        /* Mobile screens, landscape */
+        @media screen and (max-height: 500px) {
+            .text h1 {
+                font-size: 2em;
+            }
+
+            .text p {
+                font-size: 1.2em;
+            }
+
+            .text m {
+                font-size: 0.8rem;
+            }
+
+            .circle-container {
+                width: 90px;
+                height: 90px;
+            }
+
+            .social-links {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 20px;
+                width: 90%;
+                margin: 0 auto;
+            }
+            
+            .sidebar {
+                right: -65vw; /* Start off-screen */
+                width: 65vw;
+            }
+        }
+
+        /* Larger screens */
+        @media screen and (min-width: 601px) and (min-height: 501px) {
+            .text h1 {
+                font-size: 3em;
+            }
+
+            .text p {
+                font-size: 1.8em;
+            }
+
+            .text m {
+                font-size: 1rem;
+            }
+            .circle-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            .social-links {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 5vw;
+                width: 80%;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            .sidebar {
+                right: -25vw; /* Start off-screen */
+                width: 25vw;
+            }
+        }
+
+        /* Tablet screens */
+        @media screen and (min-width: 601px) and (max-width: 1024px) and (min-height: 801px) {
+            .circle-container {
+                width: 120px;
+                height: 120px;
+            }
+
+            .social-links {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 3vw;
+                width: 95%;
+                margin: 0 auto;
+            }
+
+            .sidebar {
+                right: -45vw; /* Start off-screen */
+                width: 45vw;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="debugLine" class="debug-line"></div>
+        <div id="upperText" class="text">
+            <h1>Raphael Stöckner</h1>
+            <p>MSc. Systems, Control and Robotics</p>
+            <m>raphael [dot] stoeckner [at] posteo [dot] de</m>
+        </div>
+        <div id="lowerText" class="text">
+            <div class="social-links">
+                <div class="circle-container" data-tooltip="Download CV">
+                    <a href="/assets/Stockner_Raphael_CV.pdf">
+                        <img src="/images/file-text.svg" alt="CV">
+                    </a>
+                </div>
+                <div class="circle-container" data-tooltip="View Projects">
+                    <a href="#" onclick="toggleSidebar();">
+                        <img src="/images/library-big.svg" alt="Works">
+                    </a>
+                </div>
+                <div class="circle-container" data-tooltip="LinkedIn Profile">
+                    <a href="https://www.linkedin.com/in/raphael-st%C3%B6ckner-474a94288/">
+                        <img src="/images/InBug-White.png" alt="LinkedIn">
+                    </a>
+                </div>
+                <div class="circle-container" data-tooltip="Github Profile">
+                    <a href="https://github.com/raphael-jms">
+                        <img src="/images/github-mark-white.svg" alt="GitHub">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar" id="sidebar">
+            <span class="close-btn" onclick="toggleSidebar()">✕</span>
+            <div class="sidebar-heading">Works</div>
+            <div class="menu-items">
+                <a href="/projects/failsafe-space-robotics" class="menu-item">Failsafe Control for Space Robotics Systems [Watch video]</a>
+                <a href="/assets/Failsafe Control for Space Robotic Systems - Model Predictive Control under Actuator Failures.pdf" class="menu-item">Failsafe Control for Space Robotics Systems - Model Predictive Control under Actuator Failures [Download PDF]</a>
+                <a href="/assets/Hydraulic Modeling and Passivity-Based Control of Next Generation District Heating Networks.pdf" class="menu-item">Hydraulic Modeling and Passivity-based Control of Next Generation District Heating Networks [Download PDF]</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const LINE_Y = 2000; // Y position of the line in the original image (px)
+        const IMAGE_OFFSET = 63; // Offset in percentage (positive moves image down)
+        
+        function calculateTextPositions() {
+            const container = document.querySelector('.container');
+            const upperText = document.getElementById('upperText');
+            const lowerText = document.getElementById('lowerText');
+            const debugLine = document.getElementById('debugLine');
+
+            // Create temporary image to get original dimensions
+            const img = new Image();
+            img.src = getComputedStyle(container).backgroundImage.replace(/url\(['"]?(.*?)['"]?\)/i, '$1');
+            
+            img.onload = function() {
+                // Set image offset (in percentage)
+                container.style.setProperty('--image-offset', `${IMAGE_OFFSET}%`);
+
+                // Get container and image dimensions
+                const containerWidth = container.offsetWidth;
+                const containerHeight = container.offsetHeight;
+                const naturalWidth = img.width;
+                const naturalHeight = img.height;
+
+                // Calculate scale factor for 'cover'
+                const scaleX = containerWidth / naturalWidth;
+                const scaleY = containerHeight / naturalHeight;
+                const scale = Math.max(scaleX, scaleY);
+
+                // Calculate scaled image dimensions
+                const scaledWidth = naturalWidth * scale;
+                const scaledHeight = naturalHeight * scale;
+
+                // Calculate image offset in pixels based on percentage
+                const pixelOffset = (scaledHeight - containerHeight) * (IMAGE_OFFSET / 100);
+
+                // Calculate line position in viewport coordinates
+                const scaledLineY = (LINE_Y * scale) - pixelOffset;
+                debugLine.style.top = `${scaledLineY}px`;
+
+                // Position texts in the middle of each section
+                upperText.style.top = `${scaledLineY * 0.6}px`;
+                lowerText.style.top = `${scaledLineY + (containerHeight - scaledLineY) / 2}px`;
+
+                console.log({
+                    containerHeight,
+                    scaledHeight,
+                    pixelOffset,
+                    scaledLineY,
+                    upperTextY: scaledLineY / 2,
+                    lowerTextY: scaledLineY + (containerHeight - scaledLineY) / 2
+                });
+            };
+        }
+
+        // Calculate positions when page loads and on window resize
+        window.addEventListener('load', calculateTextPositions);
+        window.addEventListener('resize', calculateTextPositions);
+
+        // Get elements
+        const trigger = document.querySelector('.trigger');
+        const sidebar = document.getElementById('sidebar');
+
+        // Toggle function
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+        }
+
+        // Add click event to trigger
+        trigger.addEventListener('click', toggleSidebar);
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && !trigger.contains(e.target) && sidebar.classList.contains('active')) {
+                toggleSidebar();
+            }
+        });
+    </script>
+</body>
+</html>

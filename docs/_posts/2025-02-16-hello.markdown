@@ -1,0 +1,7 @@
+---
+layout: post
+title:  "Hello!"
+date:   2025-02-16 13:01:09 +0100
+categories: updates
+---
+Hello, I am Raphael Stöckner and this is my personal webplace. More will come soon!
