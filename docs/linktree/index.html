@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linktree</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="../images/title_img.svg" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="linktree.css">
+</head>
+<body>
+  <div id="app" class="page"></div>
+
+  <script src="linktree.js"></script>
+  <script>
+    // This is an example instance. To make a new linktree for a different
+    // purpose, copy this file and edit the config below — linktree.css and
+    // linktree.js are shared and don't need to change.
+    renderLinktree({
+      name: "Raphael Stöckner",
+      subtitle: "PhD student in Co-Design - integrated planning, hardware, control",
+      avatar: {
+        image: "../images/final_circle_cropped_smaller_v3.png"
+      },
+      theme: {
+        background: "#F6F1E6",
+        accent: "#28471F",
+        text: "#1C1C1C",
+        subtitleText: "#4A4A44",
+        buttonText: "#F6F1E6",
+        border: "#111111"
+      },
+      links: [
+        { label: "Paper: Hardware-In-the-Loop Robust Co-Design of an Underactuated System", url: "https://arxiv.org/abs/2509.02527" },
+        { label: "Control hardware over the internet: CloudPendulum @ Chalmers RAIL", url: "https://cloudpendulum.m2.chalmers.se/" },
+        { label: "Download the poster", url: "../assets/IJCAI_Poster_Hitl_robust_codesign.pdf" },
+      ],
+      socials: [
+        { icon: "mail", url: "mailto:stockner@chalmers.se", label: "Email" },
+        { icon: "linkedin", url: "https://www.linkedin.com/in/r-stockner", label: "LinkedIn" },
+        { icon: "website", url: "https://raphaelstockner.com", label: "Website" }
+      ]
+    });
+  </script>
+</body>
+</html>
