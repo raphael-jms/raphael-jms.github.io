@@ -11,7 +11,15 @@
     subtitle: string,
     avatar: { image?: string },       // omit image to fall back to initials
     theme: { background, text, subtitleText, accent, buttonText, border },
-    links: [ { label, url } ],
+    works: [
+      {
+        tag: string,                 // short label shown on the switcher pill + as a badge, e.g. "IJCAI 2025"
+        title: string,
+        blurb: string,               // optional one-line description
+        primary: { label, url },     // main call-to-action button
+        links: [ { label, url } ]    // optional secondary links (poster, project page, code, ...)
+      }
+    ],
     socials: [ { icon: "mail"|"linkedin"|"website"|"github", url, label? } ]
   }
 */
@@ -45,6 +53,24 @@
     if (theme.border) root.setProperty("--border-color", theme.border);
   }
 
+  function renderWork(work) {
+    if (!work) return "";
+    const blurbHtml = work.blurb ? `<p class="work-blurb">${work.blurb}</p>` : "";
+    const primaryHtml = work.primary
+      ? `<a class="link-box link-box-primary" href="${work.primary.url}" target="_blank" rel="noopener">${work.primary.label}</a>`
+      : "";
+    const secondaryHtml = (work.links || [])
+      .map((l) => `<a class="link-box link-box-secondary" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`)
+      .join("");
+
+    return `
+      ${work.tag ? `<span class="work-tag">${work.tag}</span>` : ""}
+      <h2 class="work-title">${work.title || ""}</h2>
+      ${blurbHtml}
+      <div class="links">${primaryHtml}${secondaryHtml}</div>
+    `;
+  }
+
   function renderLinktree(config) {
     applyTheme(config.theme);
 
@@ -55,10 +81,6 @@
         ? `<img src="${config.avatar.image}" alt="${config.name || ""}">`
         : `<span>${initials(config.name)}</span>`;
 
-    const linksHtml = (config.links || [])
-      .map((l) => `<a class="link-box" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`)
-      .join("");
-
     const socialsHtml = (config.socials || [])
       .map(
         (s) =>
@@ -68,13 +90,47 @@
       )
       .join("");
 
+    const works = config.works || [];
+    const switcherHtml =
+      works.length > 1
+        ? `<div class="work-switcher">
+            <select id="workSelect" class="work-select" aria-label="Select work">
+              ${works.map((w, i) => `<option value="${i}">${w.tag || w.title}</option>`).join("")}
+            </select>
+          </div>`
+        : "";
+
     document.getElementById("app").innerHTML = `
-      <div class="avatar">${avatarHtml}</div>
-      <h1 class="name">${config.name || ""}</h1>
-      <p class="subtitle">${config.subtitle || ""}</p>
-      <div class="links">${linksHtml}</div>
-      <div class="socials">${socialsHtml}</div>
+      <header class="byline">
+        <div class="avatar">${avatarHtml}</div>
+        <div class="byline-text">
+          <h1 class="name">${config.name || ""}</h1>
+          <p class="subtitle">${config.subtitle || ""}</p>
+        </div>
+      </header>
+
+      ${switcherHtml}
+
+      <section class="work-card" id="workCard">${renderWork(works[0])}</section>
+
+      <footer class="contact">
+        <p class="contact-label">Get in touch</p>
+        <div class="socials">${socialsHtml}</div>
+      </footer>
     `;
+
+    const card = document.getElementById("workCard");
+    const select = document.getElementById("workSelect");
+    if (select) {
+      select.addEventListener("change", () => {
+        const index = Number(select.value);
+        card.classList.add("fade");
+        window.setTimeout(() => {
+          card.innerHTML = renderWork(works[index]);
+          card.classList.remove("fade");
+        }, 120);
+      });
+    }
   }
 
   window.renderLinktree = renderLinktree;
